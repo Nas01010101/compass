@@ -1,0 +1,13 @@
+{
+  "name": "mandat-backend",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "server.js",
+  "scripts": { "start": "node server.js" },
+  "engines": { "node": ">=20" },
+  "dependencies": {
+    "@google/genai": "^1.0.0",
+    "google-auth-library": "^9.0.0"
+  }
+}

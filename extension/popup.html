@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Mandat</title>
+<style>
+  :root { --fg:#1b1b1f; --mut:#5f6368; --bg:#fff; --line:#dadce0; --acc:#1a73e8; --bad:#b3261e; --ok:#1e6b3a; }
+  @media (prefers-color-scheme: dark) { :root { --fg:#e8eaed; --mut:#9aa0a6; --bg:#202124; --line:#3c4043; --acc:#8ab4f8; --bad:#f28b82; --ok:#81c995; } }
+  body { width: 380px; margin: 0; padding: 14px; font: 14px system-ui; color: var(--fg); background: var(--bg); }
+  h1 { font-size: 16px; margin: 0 0 8px; }
+  textarea { width: 100%; box-sizing: border-box; min-height: 64px; font: inherit; padding: 8px; border: 1px solid var(--line); border-radius: 8px; background: transparent; color: inherit; }
+  button { margin-top: 8px; padding: 8px 14px; border: 0; border-radius: 8px; background: var(--acc); color: #fff; font-weight: 600; cursor: pointer; }
+  button.ghost { background: transparent; color: var(--mut); border: 1px solid var(--line); }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0; }
+  .chip { border: 1px solid var(--line); border-radius: 999px; padding: 3px 9px; font-size: 12px; }
+  .mut { color: var(--mut); font-size: 12px; }
+  ul { list-style: none; padding: 0; margin: 6px 0 0; max-height: 180px; overflow: auto; }
+  li { border-top: 1px solid var(--line); padding: 6px 0; font-size: 12px; }
+  .blocked, .injection { color: var(--bad); } .allowed { color: var(--ok); }
+  details { margin-top: 10px; }
+  input { width: 100%; box-sizing: border-box; padding: 6px; border: 1px solid var(--line); border-radius: 6px; background: transparent; color: inherit; }
+</style>
+</head>
+<body>
+  <h1>What may your agent do?</h1>
+  <textarea id="mandate" placeholder="Pay my landlord jane@rent.example up to $1200 on quickpay.example, nothing else"></textarea>
+  <button id="compile">Set mandate</button>
+  <button id="clear" class="ghost">Clear</button>
+  <div id="status" class="mut"></div>
+  <div id="chips" class="chips"></div>
+  <strong>Activity</strong>
+  <ul id="log"></ul>
+  <details><summary class="mut">Backend</summary><input id="backend"></details>
+  <script src="popup.js" type="module"></script>
+</body>
+</html>

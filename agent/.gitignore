@@ -1,0 +1,4 @@
+copilot/.env
+receipts.jsonl
+.venv/
+__pycache__/
