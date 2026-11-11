@@ -1,0 +1,28 @@
+name: Request
+description: Ask the owner to test, deploy, grant access or decide something
+labels: ["request"]
+body:
+  - type: dropdown
+    id: kind
+    attributes:
+      label: Kind
+      options:
+        - Test this live
+        - Deploy my branch
+        - Google Cloud access
+        - Decision
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What you need
+      description: One or two sentences. Link the PR or branch if there is one.
+    validations:
+      required: true
+  - type: textarea
+    id: test
+    attributes:
+      label: How to check it
+      description: Steps or the prompt to give the agent, and the expected result.

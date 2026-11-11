@@ -4,6 +4,8 @@ Voice browser agent for blind and low-vision users, built on Google ADK with Gem
 
 Google Cloud project `copilot-gdg-11111801`, region `us-central1`. Cloud Run service `copilot` at https://copilot-embrfilgsa-uc.a.run.app.
 
+Before working, read `docs/CONTEXT.md` (project state and decisions) and `TEAM.md` (your role, how to ask the owner). Work on a branch and open a PR. For a deploy, Google Cloud access, a decision or a live test, open an issue with the Request form (`gh issue create --label request`), then continue with what you can do without it.
+
 ## Layout
 
 | Path | Contents |
