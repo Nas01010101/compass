@@ -104,6 +104,13 @@ def test_send_only_mandate_covers_recipient_and_amount_form():
     assert before["status"] == "needs_confirmation"
 
 
+def test_mandate_sites_with_port_or_scheme_match():
+    # Gemini wrote "localhost:8765" for the demo page; seen live on Cloud Run.
+    assert policy.host_allowed("localhost", ["localhost:8765"])
+    assert policy.host_allowed("quickpay.example", ["https://www.QuickPay.example/pay"])
+    assert not policy.host_allowed("evil.example", ["localhost:8765"])
+
+
 def test_no_go_site_and_web_risk(monkeypatch):
     state = {"mandate": {**MANDATE, "allowedSites": []}}
     g = guardian.Guardian()

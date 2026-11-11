@@ -29,8 +29,14 @@ def host(url: str) -> str:
     return h.removeprefix("www.")
 
 
+def site(s: str) -> str:
+    """Mandate entries come from Gemini as "localhost:8765" or "https://www.x.com/pay"; keep the host."""
+    s = str(s).strip().lower()
+    return host(s if "//" in s else "//" + s)
+
+
 def host_allowed(h: str, allowed: list[str]) -> bool:
-    return any(h == a or h.endswith("." + a) for a in allowed)
+    return any(h == a or h.endswith("." + a) for a in map(site, allowed))
 
 
 def parse_amount(v) -> float:
