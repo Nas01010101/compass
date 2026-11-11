@@ -45,11 +45,15 @@ def parse_amount(v) -> float:
 
 
 def classify(fields: dict[str, str]) -> str:
+    # A form naming a recipient is a transfer even when it also has an amount; mandates
+    # compiled from "pay X to Y" grant "send", and calling that form "purchase" blocked it.
     keys = list(fields)
-    if any(CARD_LABEL.search(k) or AMOUNT_LABEL.search(k) for k in keys):
+    if any(CARD_LABEL.search(k) for k in keys):
         return "purchase"
     if any(RECIPIENT_LABEL.search(k) for k in keys):
         return "send"
+    if any(AMOUNT_LABEL.search(k) for k in keys):
+        return "purchase"
     return "submit"
 
 

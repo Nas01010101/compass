@@ -1,4 +1,6 @@
-# Accessibility Copilot
+# Compass
+
+Live: https://copilot-embrfilgsa-uc.a.run.app (pick "copilot"). Google services used: [STACK.md](STACK.md).
 
 A voice browser agent for blind and low-vision users. You say what you want done ("pay my rent to jane@rent.example, at most 1200 dollars, on QuickPay"); the agent reads the page from Chrome's accessibility tree, fills the form and clicks for you. A Guardian checks every action against what you said before it runs, so a hidden instruction on the page cannot redirect the money.
 
@@ -56,7 +58,7 @@ Tests (no network): `cd agent && uv run pytest` (Guardian, including a snapshot 
 ## Limits
 
 - Field and button detection reads accessible names. A recipient field labelled "Field 7" is not recognised as a recipient.
-- The browser layer runs on the user's machine; the Cloud Run deploy serves the agent API without browser tools.
+- The Cloud Run deploy drives its own headless Chromium inside the container, so it can only reach pages that container can load (the bundled demo page at `http://localhost:8765` and public sites). Driving the user's own Chrome needs the local setup above.
 - With no Google Cloud credentials, the mandate compiler falls back to a regex parse and injection screening falls back to local patterns.
 
 ## License

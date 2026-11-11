@@ -95,6 +95,15 @@ def test_mandated_payment_asks_then_runs_and_writes_receipt(tmp_path):
     assert "pay my rent to Jane" in open(tmp_path / "r.jsonl").read()
 
 
+def test_send_only_mandate_covers_recipient_and_amount_form():
+    # Gemini compiles "pay my rent to Jane" to allowedActions ["send"]; seen live on Cloud Run.
+    state = {"mandate": {**MANDATE, "allowedActions": ["send"]}}
+    g, _ = page(state)
+    run(g, "fill_form", {"elements": [{"uid": "1_2", "value": "jane@rent.example"}, {"uid": "1_3", "value": "1200"}]}, state)
+    before, _ = run(g, "click", {"uid": "1_4"}, state)
+    assert before["status"] == "needs_confirmation"
+
+
 def test_no_go_site_and_web_risk(monkeypatch):
     state = {"mandate": {**MANDATE, "allowedSites": []}}
     g = guardian.Guardian()
