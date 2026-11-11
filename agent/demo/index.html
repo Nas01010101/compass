@@ -31,6 +31,12 @@
 
   <script>
     const out = document.getElementById("out");
+    // The demo is served by a static file server, which rejects POST; show the transfer on the page instead.
+    document.getElementById("pay").onsubmit = (e) => {
+      e.preventDefault();
+      const f = Object.fromEntries(new FormData(e.target));
+      out.textContent = `Transfer sent: ${f.amount} CAD to ${f.recipient} (${f.memo})`;
+    };
     document.getElementById("api").onclick = async () => {
       const f = Object.fromEntries(new FormData(document.getElementById("pay")));
       try {
