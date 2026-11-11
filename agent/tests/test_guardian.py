@@ -60,6 +60,17 @@ def test_parse_amount_formats():
     assert policy.parse_amount("1.200,50") == 1200.5
 
 
+def test_unreadable_amount_fails_closed():
+    # parse_amount returns NaN for "one thousand" and NaN > max is False, so it used to pass.
+    action = {"kind": "send", "url": "https://quickpay.example/transfer", "fields": {"Amount": "one thousand"}}
+    res = policy.check(MANDATE, action)
+    assert res["verdict"] == "block"
+    assert any("amount 'one thousand' could not be read" in r for r in res["reasons"])
+    # without maxAmount there is no limit to enforce, so the same value is not blocked on amount
+    res = policy.check({**MANDATE, "maxAmount": None}, action)
+    assert not any("could not be read" in r for r in res["reasons"])
+
+
 def test_injected_recipient_blocked():
     state = {"mandate": MANDATE}
     g, after = page(state)

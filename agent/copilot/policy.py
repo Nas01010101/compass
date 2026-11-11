@@ -7,6 +7,7 @@ matching it whole.
 
 from __future__ import annotations
 
+import math
 import re
 import time
 from urllib.parse import urlparse
@@ -106,7 +107,9 @@ def check(policy: dict | None, action: dict, now: float | None = None) -> dict:
             reasons.append(f"recipient {v} is not in the mandate")
         if policy.get("maxAmount") is not None and AMOUNT_LABEL.search(k):
             a = parse_amount(v)
-            if a > policy["maxAmount"]:
+            if math.isnan(a):  # NaN > max is False, so an unreadable amount must be blocked explicitly
+                reasons.append(f"amount '{v}' could not be read")
+            elif a > policy["maxAmount"]:
                 reasons.append(f"amount {a:g} exceeds the limit of {policy['maxAmount']:g}")
         if any(_low(f) in _low(k) for f in policy.get("forbiddenData") or []):
             reasons.append(f'field "{k}" carries data the mandate forbids')
