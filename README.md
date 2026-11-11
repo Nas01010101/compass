@@ -1,3 +1,5 @@
+![Compass](docs/banner.png)
+
 # Compass
 
 Live: https://copilot-embrfilgsa-uc.a.run.app (pick "copilot"). Google services used: [STACK.md](STACK.md).
@@ -54,6 +56,10 @@ Voice: set `COPILOT_MODEL=gemini-3.8-live` in `agent/copilot/.env` and use the m
 Demo page: `python3 -m http.server 8765 --directory backend/demo`, then ask the agent to pay the rent on `http://localhost:8765`.
 
 Tests (no network): `cd agent && uv run pytest` (Guardian, including a snapshot recorded from chrome-devtools-mcp) and `npm test` (extension policy).
+
+## Team setup
+
+A teammate with a Google account runs the agent against the shared Google Cloud project `copilot-gdg-11111801` in two steps: the owner runs `scripts/grant-teammate.sh <email>` to grant IAM roles, then the teammate runs `scripts/teammate-setup.sh` to sign in, write `agent/copilot/.env` and run the tests. Layout, run, test and redeploy commands and repo rules are in [AGENTS.md](AGENTS.md), which Claude Code, Codex and Gemini CLI read.
 
 ## Limits
 
