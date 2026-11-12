@@ -1,7 +1,7 @@
 const $ = (id) => document.getElementById(id);
 
 function chips(p) {
-  if (!p) return "<span class='mut'>No mandate: Mandat only watches.</span>";
+  if (!p) return "<span class='mut'>No mandate: Compass only watches.</span>";
   const c = [];
   (p.allowedSites || []).forEach((s) => c.push(`site: ${s}`));
   (p.allowedRecipients || []).forEach((r) => c.push(`to: ${r}`));

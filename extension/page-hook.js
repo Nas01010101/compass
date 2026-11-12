@@ -31,7 +31,7 @@
     const method = (init.method || input?.method || "GET").toUpperCase();
     const fields = method !== "GET" ? bodyFields(init.body) : null;
     if (fields && !(await ask(input?.url || input, fields))) {
-      return Promise.reject(new TypeError("Blocked by Mandat: outside the user's mandate"));
+      return Promise.reject(new TypeError("Blocked by Compass: outside the user's mandate"));
     }
     return origFetch.apply(this, arguments);
   };

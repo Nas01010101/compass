@@ -1,7 +1,7 @@
 // Isolated-world content script: intercepts form submissions, relays page-hook questions to
 // the service worker, scans for hidden agent-directed instructions, and shows the verdict.
 (() => {
-  const H = globalThis.MandatHeuristics;
+  const H = globalThis.CompassHeuristics;
 
   function formFields(form) {
     const out = {};
@@ -15,7 +15,7 @@
 
   function banner(text, ok) {
     const b = document.createElement("div");
-    b.textContent = (ok ? "Mandat: " : "Mandat blocked this: ") + text;
+    b.textContent = (ok ? "Compass: " : "Compass blocked this: ") + text;
     b.setAttribute("role", "alert");
     b.style.cssText = `position:fixed;z-index:2147483647;left:16px;right:16px;bottom:16px;padding:14px 18px;
       border-radius:10px;font:600 15px system-ui;color:#fff;background:${ok ? "#1e6b3a" : "#b3261e"};

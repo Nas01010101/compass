@@ -5,3 +5,4 @@ node_modules/
 .compete/
 kickoff.md
 .claude/
+.playwright-mcp/
