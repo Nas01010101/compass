@@ -2,6 +2,8 @@
 
 # Compass
 
+Built for the Google Developer Groups (GDG) hackathon on 11 November 2026, as the team's challenge entry. Development continues in [Aloud](https://github.com/Nas01010101/aloud), which builds the accessibility side further: a voice console with push-to-talk and screen-reader commands, recorded on a real browser.
+
 **Demo video (1:51):** [docs/video/compass-demo.mp4](docs/video/compass-demo.mp4)
 
 ![The Guardian blocks the planted payment, then asks before Jane's payment](docs/demo.gif)
