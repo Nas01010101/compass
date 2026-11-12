@@ -265,3 +265,78 @@ def test_shop_tip_under_limit_but_total_over_is_blocked():
     run(g, "fill", {"pageId": 3, "uid": "1_10", "value": "50"}, state)
     before, _ = run(g, "click", {"pageId": 3, "uid": "1_14"}, state)
     assert before["status"] == "blocked_by_guardian"
+
+
+# ---- session memory: "où en étais-je ?" (journal.py) --------------------------------------------
+
+from copilot import journal
+
+
+def test_journal_masks_secrets_and_drops_query_strings():
+    state = {}
+    e = journal.record(state, "fill", "typed " + journal.field_text("Card number", "4242 4242 4242 4242"),
+                       url="https://www.shop.example/pay?token=abc123")
+    assert "4242" not in e["text"] and "•••" in e["text"]
+    assert e["page"] == "shop.example/pay"
+    assert journal.place("http://localhost:8765/shop.html") == "localhost:8765/shop.html"
+    for i in range(journal.MAX_ENTRIES + 5):
+        journal.record(state, "page", f"opened {i}")
+    assert len(state[journal.KEY]) == journal.MAX_ENTRIES
+
+
+def test_where_was_i_keeps_only_the_asked_window():
+    state = {"mandate": MANDATE, "goal": "pay my rent to Jane"}
+    journal.record(state, "page", "opened old page", now=1000)
+    journal.record(state, "page", "opened quickpay.example", now=1000 + 15 * 60)
+    out = journal.where_was_i(state, 10, now=1000 + 20 * 60)
+    assert [a["text"] for a in out["activity"]] == ["opened quickpay.example"]
+    assert out["activity"][0]["minutes_ago"] == 5
+    assert out["older_entries"] == 1
+
+
+def test_guardian_journals_page_warning_fill_and_block():
+    state = {"mandate": MANDATE}
+    g, _ = page(state)
+    run(g, "fill", {"uid": "1_2", "value": "attacker@evil.example"}, state)
+    run(g, "click", {"uid": "1_4"}, state)
+    kinds = [e["kind"] for e in state[journal.KEY]]
+    assert kinds == ["page", "warning", "fill", "blocked"]
+    out = journal.where_was_i(state, 10)
+    assert "attacker@evil.example" in out["resume"]["last_block"]
+    assert out["resume"]["page"] == "https://quickpay.example/transfer"
+    assert out["resume"]["typed_not_sent"] == ["Recipient email: attacker@evil.example"]
+
+
+def test_where_was_i_after_interruption_at_confirmation_then_resume():
+    state = {"mandate": MANDATE, "goal": "pay my rent to Jane"}
+    journal.record(state, "task", "pay my rent to Jane")
+    g, _ = page(state)
+    run(g, "fill_form", {"elements": [{"uid": "1_2", "value": "jane@rent.example"}, {"uid": "1_3", "value": "1200"}]}, state)
+    run(g, "click", {"uid": "1_4"}, state)
+    out = journal.where_was_i(state, 10)
+    assert "jane@rent.example" in out["resume"]["waiting_for_yes"]
+    assert "waiting for the user's yes" in out["resume"]["next_step"]
+    assert out["resume"]["mandate_active"]
+
+    # The user comes back and says yes (what confirm_pending does), then the click runs.
+    state["guardian:approved"] = state["guardian:pending"]["sig"]
+    journal.record(state, "yes", "you said yes")
+    assert "retry the same click" in journal.where_was_i(state, 10)["resume"]["next_step"]
+    run(g, "click", {"uid": "1_4"}, state)
+    done = state[journal.KEY][-1]
+    assert done["kind"] == "done" and done["receipt"].startswith("file:")
+    out = journal.where_was_i(state, 10)
+    assert out["resume"]["waiting_for_yes"] is None
+    assert out["resume"]["next_step"].startswith("Take a snapshot")
+
+
+def test_new_session_resumes_from_journal_but_needs_the_mandate_again():
+    old = {"mandate": MANDATE, "goal": "pay my rent to Jane"}
+    journal.record(old, "task", "pay my rent to Jane")
+    g, _ = page(old)
+    fresh = {journal.KEY: old[journal.KEY]}  # ADK keeps "user:" keys across sessions
+    out = journal.where_was_i(fresh, 10)
+    assert out["resume"]["goal"] == "pay my rent to Jane"
+    assert out["resume"]["page"] == "https://quickpay.example/transfer"
+    assert not out["resume"]["mandate_active"]
+    assert "set_mandate" in out["resume"]["next_step"]
