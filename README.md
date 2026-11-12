@@ -21,6 +21,8 @@ Open [`docs/demo-ui/index.html`](docs/demo-ui/) in Chrome to step through both a
 
 ## How it works
 
+![Compass architecture](docs/architecture.png)
+
 ```
 voice / text ──> orchestrator (gemini-3.8-flash, or gemini-3.8-live for voice)
                    ├─ set_mandate: Gemini structured output turns your sentence into a policy
