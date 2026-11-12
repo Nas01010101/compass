@@ -12,6 +12,11 @@
       <stop offset="0.6" stop-color="#b9a8ff"/>
       <stop offset="1" stop-color="#eef6ff"/>
     </linearGradient>
+    <linearGradient id="gem" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0" stop-color="#6FB0FF"/>
+      <stop offset="0.55" stop-color="#A98CF2"/>
+      <stop offset="1" stop-color="#F07C8A"/>
+    </linearGradient>
   </defs>
 
   <rect width="1200" height="600" fill="url(#bg)"/>
@@ -93,5 +98,7 @@
       <circle cx="10" cy="0" r="3"/>
       <circle cx="10" cy="10" r="3"/>
     </g>
+    <!-- Gemini sparkle (drawn approximation, swap for the official asset if kept) -->
+    <path transform="translate(346 -24)" d="M0,-24 C0,-10.1 10.1,0 24,0 C10.1,0 0,10.1 0,24 C0,10.1 -10.1,0 -24,0 C-10.1,0 0,-10.1 0,-24 Z" fill="url(#gem)"/>
   </g>
 </svg>
