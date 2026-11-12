@@ -22,5 +22,5 @@
     return false;
   }
 
-  root.MandatHeuristics = { looksLikeInjection, isHidden };
+  root.CompassHeuristics = { looksLikeInjection, isHidden };
 })(globalThis);
