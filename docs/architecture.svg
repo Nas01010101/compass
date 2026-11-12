@@ -42,7 +42,7 @@
   <rect x="380" y="290" width="520" height="140" rx="16" class="box"/>
   <text x="410" y="340" class="h">Orchestrator agent</text>
   <text x="410" y="378" class="s">ADK · Gemini 3.8 Flash on Vertex AI</text>
-  <text x="410" y="408" class="s">Gemini 3.8 Live for voice in and out</text>
+  <text x="410" y="408" class="s">Talks with the user, sets the mandate, routes work</text>
 
   <!-- mandate -->
   <rect x="940" y="290" width="520" height="140" rx="16" class="box"/>
@@ -120,6 +120,6 @@
   <path d="M1680,650 L1680,604" class="line"/>
 
   <!-- footer -->
-  <text x="60" y="990" fill="#ffffff" font-size="28" font-weight="700">Every Gemini decision is checked by a layer that is not an LLM.</text>
-  <text x="60" y="1032" class="s" font-size="22">ADK · Gemini on Vertex AI · Gemini Live · Model Armor · Web Risk · Firestore · Cloud Run · Chrome DevTools MCP</text>
+  <text x="60" y="990" fill="#ffffff" font-size="28" font-weight="700">Every browser action is checked by a layer that is not an LLM.</text>
+  <text x="60" y="1032" class="s" font-size="22">ADK · Gemini on Vertex AI · Model Armor · Web Risk · Firestore · Cloud Run · Chrome DevTools MCP</text>
 </svg>

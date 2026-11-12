@@ -17,7 +17,7 @@ Live: https://copilot-embrfilgsa-uc.a.run.app (pick "copilot") · Code: https://
 - Les vérifications sont faites par destinataire, pas par site : un formulaire bancaire de confiance ne peut pas payer le mauvais compte.
 - Le Guardian est un plugin ADK, donc aucun sous-agent ne peut le contourner.
 
-**Google Cloud.** ADK (orchestrateur, lecteur, navigateur), Gemini 3.8 Flash sur Vertex AI (sortie structurée pour le mandat), Gemini 3.8 Live pour la voix, Model Armor (injection de prompt), Web Risk (hameçonnage), Firestore (reçus), Cloud Run (agent + Chromium headless), Chrome DevTools MCP.
+**Google Cloud.** ADK (orchestrateur, lecteur, navigateur), Gemini 3.8 Flash sur Vertex AI (sortie structurée pour le mandat), Model Armor (injection de prompt), Web Risk (hameçonnage), Firestore (reçus), Cloud Run (agent + Chromium headless), Chrome DevTools MCP.
 
 **Démontré en direct sur Cloud Run.** L'instruction cachée sur la page de démo est signalée par Model Armor et le clic est bloqué. Le vrai paiement à Jane demande confirmation, s'exécute après « oui » et écrit un reçu Firestore.
 
@@ -34,7 +34,7 @@ Live: https://copilot-embrfilgsa-uc.a.run.app (pick "copilot") · Code: https://
 - Checks are per recipient, not per site: a trusted bank form still cannot pay the wrong account.
 - The Guardian is an ADK plugin, so no sub-agent can skip it.
 
-**Google Cloud.** ADK (orchestrator, reader, navigator), Gemini 3.8 Flash on Vertex AI (structured output for the mandate), Gemini 3.8 Live for voice, Model Armor (prompt injection), Web Risk (phishing), Firestore (receipts), Cloud Run (agent plus headless Chromium), Chrome DevTools MCP.
+**Google Cloud.** ADK (orchestrator, reader, navigator), Gemini 3.8 Flash on Vertex AI (structured output for the mandate), Model Armor (prompt injection), Web Risk (phishing), Firestore (receipts), Cloud Run (agent plus headless Chromium), Chrome DevTools MCP.
 
 **Shown live on Cloud Run.** The planted instruction on the demo page is flagged by Model Armor and the click is blocked. The real payment to Jane asks first, runs after "yes", and writes a Firestore receipt.
 
