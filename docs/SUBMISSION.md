@@ -21,6 +21,8 @@ Live: https://copilot-embrfilgsa-uc.a.run.app (pick "copilot") · Code: https://
 
 **Démontré en direct sur Cloud Run.** L'instruction cachée sur la page de démo est signalée par Model Armor et le clic est bloqué. Le vrai paiement à Jane demande confirmation, s'exécute après « oui » et écrit un reçu Firestore.
 
+**La suite.** Des commandes vocales qui comprennent la page (« clique sur le deuxième résultat », « lis l'article principal »), le contrôle du total de la commande et pas seulement de chaque champ, et plus de langues.
+
 ## English
 
 **Compass: a voice browser agent for blind and low-vision users that the page cannot hijack.**
@@ -37,6 +39,8 @@ Live: https://copilot-embrfilgsa-uc.a.run.app (pick "copilot") · Code: https://
 **Google Cloud.** ADK (orchestrator, reader, navigator), Gemini 3.8 Flash on Vertex AI (structured output for the mandate), Model Armor (prompt injection), Web Risk (phishing), Firestore (receipts), Cloud Run (agent plus headless Chromium), Chrome DevTools MCP.
 
 **Shown live on Cloud Run.** The planted instruction on the demo page is flagged by Model Armor and the click is blocked. The real payment to Jane asks first, runs after "yes", and writes a Firestore receipt.
+
+**What's next.** Page-aware voice commands ("click the second result", "read the main article"), checks on the order total rather than each field alone, and more languages.
 
 ## One-liners
 
