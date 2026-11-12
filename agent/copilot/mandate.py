@@ -13,7 +13,26 @@ import time
 
 from google.genai import types
 
-MODEL = os.getenv("COPILOT_MODEL", "gemini-3.8-flash")
+DEFAULT_MODEL = "gemini-3.8-flash"
+
+
+def mandate_model(agent_model: str | None = None) -> str:
+    """Model for the one-shot structured-output call that compiles the mandate.
+
+    Voice mode sets COPILOT_MODEL to a Live model, which is meant for the bidirectional Live API
+    rather than generate_content with a JSON schema. If that call fails, compile_mandate drops to
+    the regex fallback, and the fallback reads nothing from a spoken sentence ("jane at rent dot
+    example, at most twelve hundred dollars"): no recipient, no limit. So a Live model never
+    compiles mandates; COPILOT_MANDATE_MODEL overrides the choice.
+    """
+    override = os.getenv("COPILOT_MANDATE_MODEL")
+    if override:
+        return override
+    agent_model = agent_model or os.getenv("COPILOT_MODEL", DEFAULT_MODEL)
+    return DEFAULT_MODEL if re.search(r"live|native-audio", agent_model, re.I) else agent_model
+
+
+MODEL = mandate_model()
 
 SCHEMA = {
     "type": "object",
