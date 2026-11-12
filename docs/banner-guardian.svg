@@ -12,9 +12,48 @@
       <stop offset="0.6" stop-color="#b9a8ff"/>
       <stop offset="1" stop-color="#eef6ff"/>
     </linearGradient>
+    <symbol id="bn" overflow="visible">
+      <circle cx="0" cy="0" r="2.1" fill="#ffffff"/>
+      <circle cx="0" cy="14" r="2.1" fill="#ffffff"/>
+      <circle cx="7" cy="0" r="2.1" fill="#ffffff"/>
+      <circle cx="7" cy="7" r="2.1" fill="#ffffff"/>
+    </symbol>
   </defs>
 
   <rect width="1200" height="600" fill="url(#bg)"/>
+
+  <!-- braille "N" stars: the north mark, in the alphabet our users read -->
+  <g>
+    <use href="#bn" x="398" y="107" opacity="0.73"/>
+    <use href="#bn" x="769" y="64" opacity="0.50"/>
+    <use href="#bn" x="638" y="224" opacity="0.72"/>
+    <use href="#bn" x="109" y="74" opacity="0.73"/>
+    <use href="#bn" x="512" y="477" opacity="0.46"/>
+    <use href="#bn" x="171" y="146" opacity="0.40"/>
+    <use href="#bn" x="742" y="543" opacity="0.40"/>
+    <use href="#bn" x="1138" y="50" opacity="0.39"/>
+    <use href="#bn" x="380" y="471" opacity="0.39"/>
+    <use href="#bn" x="652" y="58" opacity="0.58"/>
+    <use href="#bn" x="544" y="188" opacity="0.71"/>
+    <use href="#bn" x="626" y="504" opacity="0.68"/>
+    <use href="#bn" x="75" y="390" opacity="0.52"/>
+    <use href="#bn" x="983" y="542" opacity="0.59"/>
+    <use href="#bn" x="568" y="388" opacity="0.66"/>
+    <use href="#bn" x="468" y="390" opacity="0.34"/>
+    <use href="#bn" x="221" y="88" opacity="0.60"/>
+    <use href="#bn" x="35" y="254" opacity="0.71"/>
+    <use href="#bn" x="1112" y="402" opacity="0.65"/>
+    <use href="#bn" x="1051" y="451" opacity="0.64"/>
+    <use href="#bn" x="475" y="243" opacity="0.52"/>
+    <use href="#bn" x="148" y="372" opacity="0.38"/>
+    <use href="#bn" x="30" y="107" opacity="0.66"/>
+    <use href="#bn" x="59" y="503" opacity="0.45"/>
+    <use href="#bn" x="559" y="289" opacity="0.66"/>
+    <use href="#bn" x="220" y="447" opacity="0.74"/>
+    <use href="#bn" x="434" y="40" opacity="0.48"/>
+    <use href="#bn" x="62" y="177" opacity="0.48"/>
+    <use href="#bn" x="324" y="404" opacity="0.73"/>
+  </g>
 
   <!-- dial: one ring, four cardinal points -->
   <g transform="translate(870 300)">
