@@ -24,3 +24,13 @@ Fallback if live Gemini fails: run `cd agent && uv run pytest -v tests/test_guar
 - Fallback: `cd agent && uv run pytest -v tests/test_guardian.py -k shop`.
 
 Known gap (xfail test `test_shop_tip_under_limit_but_total_over_is_blocked`): a 50 CAD tip passes the 90 limit on its own while the order becomes 129. The Guardian checks each amount field and keeps the total from the last snapshot, so it only asks. The spoken question still names the tip.
+
+## Session memory: "où en étais-je ?"
+
+Every action the Guardian sees (page opened, field typed, block, question, yes, order done) goes into a short log in ADK state under `user:journal`, so it survives a new session for the same user. The orchestrator's `where_was_i` tool reads it back.
+
+- Start the rent payment, stop at "Should I go ahead?", then say: "Résume ce que j'ai fait depuis 10 minutes" (or "Où en étais-je ?").
+- Expected: two to four sentences: the page opened, the hidden-text warning, the fields typed, and that the payment is waiting for a yes. Then "Do you want to resume?". On yes the Guardian asks again before paying.
+- In a new session the log is still there, but the mandate is not: the agent reads the goal back and sets the mandate again only after the user confirms it.
+- Card, password and IBAN values are masked in the log. Query strings are dropped.
+- Fallback: `cd agent && uv run pytest -v tests/test_guardian.py -k "journal or where_was_i or new_session"`.

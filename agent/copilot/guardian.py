@@ -12,6 +12,7 @@ State keys (ADK session state):
   guardian:url       current page URL
   guardian:tainted   injection findings on the current page
   guardian:approved  signature of the action the user said yes to
+  user:journal       what happened, for "où en étais-je ?" (see journal.py)
 """
 
 from __future__ import annotations
@@ -23,7 +24,7 @@ from typing import Any
 
 from google.adk.plugins.base_plugin import BasePlugin
 
-from . import cloud, injection, policy
+from . import cloud, injection, journal, policy
 
 SNAP_LINE = re.compile(r'uid=(\S+)\s+(\w+)(?:\s+"((?:[^"\\]|\\.)*)")?')
 SNAP_URL = re.compile(r'url="([^"]+)"')
@@ -85,12 +86,7 @@ class Guardian(BasePlugin):
             return None
 
         if tool_name in FILL_TOOLS:
-            labels = state.get("guardian:labels") or {}
-            items = args.get("elements") if tool_name == "fill_form" else [args]
-            fields = {}
-            for it in items or []:
-                role, name = labels.get(str(it.get("uid")), ["", str(it.get("uid"))])
-                fields[name or str(it.get("uid"))] = it.get("value", "")
+            fields = self._filled(tool_name, args, state)
             v = policy.check(state.get("mandate"), {"kind": "fill", "url": state.get("guardian:url", ""), "fields": fields})
             data = [r for r in v["reasons"] if "forbids" in r]
             if data:
@@ -131,6 +127,16 @@ class Guardian(BasePlugin):
         return None
 
     @staticmethod
+    def _filled(tool_name: str, args: dict, state) -> dict:
+        labels = state.get("guardian:labels") or {}
+        items = args.get("elements") if tool_name == "fill_form" else [args]
+        fields = {}
+        for it in items or []:
+            role, name = labels.get(str(it.get("uid")), ["", str(it.get("uid"))])
+            fields[name or str(it.get("uid"))] = it.get("value", "")
+        return fields
+
+    @staticmethod
     def _block(reasons: list[str]) -> dict:
         return {
             "status": "blocked_by_guardian",
@@ -149,7 +155,16 @@ class Guardian(BasePlugin):
 
     # ---- ADK hooks -------------------------------------------------------------------------
     async def before_tool_callback(self, *, tool, tool_args, tool_context):
-        return self.decide(tool.name, tool_args or {}, tool_context.state)
+        state = tool_context.state
+        out = self.decide(tool.name, tool_args or {}, state)
+        if out and out.get("status") == "blocked_by_guardian":
+            url = (tool_args or {}).get("url") if tool.name in NAV_TOOLS else None
+            journal.record(state, "blocked", "blocked: " + "; ".join(out["reasons"]), url=url)
+        elif out and out.get("status") == "needs_confirmation":
+            action = state["guardian:pending"]["action"]
+            parts = ", ".join(journal.field_text(k, v) for k, v in action["fields"].items() if v)
+            journal.record(state, "ask", f"waiting for yes: {action['kind']} {parts}")
+        return out
 
     async def after_tool_callback(self, *, tool, tool_args, tool_context, result):
         state = tool_context.state
@@ -160,6 +175,10 @@ class Guardian(BasePlugin):
             state["guardian:form"] = {}
             state["guardian:prefill"] = {}
             state["guardian:tainted"] = None
+            journal.record(state, "page", "opened " + journal.place(tool_args["url"]), url=tool_args["url"])
+        if tool.name in FILL_TOOLS:
+            fields = self._filled(tool.name, tool_args or {}, state)
+            journal.record(state, "fill", "typed " + ", ".join(journal.field_text(k, v) for k, v in fields.items()))
         if tool.name in SUBMIT_TOOLS and state.get("guardian:last_allowed"):
             action = state["guardian:last_allowed"]
             state["guardian:last_allowed"] = None
@@ -170,6 +189,9 @@ class Guardian(BasePlugin):
                 state["guardian:receipt"] = cloud.write_receipt(
                     {"action": action, "reason": state.get("goal", ""), "mandate": state.get("mandate")}
                 )
+            parts = ", ".join(journal.field_text(k, v) for k, v in action["fields"].items() if v)
+            journal.record(state, "done", f"{action['kind']} done: {parts}", url=action["url"],
+                           receipt=state.get("guardian:receipt") if action["kind"] in policy.SENSITIVE_KINDS else None)
         text = result_text(result)
         if "uid=" in text:  # take_snapshot, or any action called with includeSnapshot
             labels, url, prefill = parse_snapshot(text)
@@ -181,6 +203,8 @@ class Guardian(BasePlugin):
         if tool.name in {"take_snapshot", "navigate_page", "new_page"} or "uid=" in text:
             scan = injection.screen(text)
             if scan["flagged"]:
+                if not state.get("guardian:tainted"):
+                    journal.record(state, "warning", "this page has hidden text aimed at AI agents")
                 state["guardian:tainted"] = scan["detail"]
                 warn = (
                     "GUARDIAN WARNING: this page contains text addressed to AI agents "
