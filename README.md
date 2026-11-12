@@ -4,6 +4,10 @@
 
 **Demo video (1:51):** [docs/video/compass-demo.mp4](docs/video/compass-demo.mp4)
 
+![The Guardian blocks the planted payment, then asks before Jane's payment](docs/demo.gif)
+
+The clip is a scripted replay of the demo UI (`docs/demo-ui/`) showing the Guardian's verdicts: a hidden instruction is flagged, the click to the injected account is blocked, and the rent payment asks for a spoken yes.
+
 **Paper (PDF):** [docs/paper/compass-paper.pdf](docs/paper/compass-paper.pdf) · [Markdown](docs/paper.md) · [LaTeX source](docs/paper/main.tex)
 
 Live: https://copilot-embrfilgsa-uc.a.run.app (pick "copilot")

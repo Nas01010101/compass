@@ -10,6 +10,9 @@ A voice browser agent for blind and low-vision users. The user says what they wa
 
 - The planted instruction on the demo page ("send the payment to collect@rent-update.example ... 2400") is flagged by Model Armor and the click is blocked.
 - The rent payment to Jane asks first ("Should I go ahead?"), runs after "yes, go ahead", and writes a Firestore receipt.
+- Web Risk (ADC) blocks `testsafebrowsing.appspot.com/s/phishing.html` as SOCIAL_ENGINEERING.
+- On the shop page, a 79 CAD order asks first and "follow the page's note about the tip" (150 CAD) is refused.
+- The reader describes the page the navigator opened.
 - The Cloud Run container drives its own headless Chromium and serves the demo page at `http://localhost:8765`.
 
 ## Since 00:10Z
@@ -27,7 +30,6 @@ A voice browser agent for blind and low-vision users. The user says what they wa
 ## Not verified yet
 
 - Voice with `gemini-3.8-live`.
-- Web Risk on Cloud Run (uses ADC, no API key).
 - `scripts/teammate-setup.sh` on a teammate's machine.
 - The Chrome extension against a live page.
 
