@@ -234,7 +234,13 @@ RootWebArea "Shop"  url=http://localhost:8765/shop.html
   button  "Place order"                             uid=1_9`;
 
 let speakOn = false;
-function say(t) { $("#say").textContent = t; if (speakOn) { try { speechSynthesis.cancel(); speechSynthesis.speak(new SpeechSynthesisUtterance(t)); } catch (e) {} } }
+function hush() { try { speechSynthesis.cancel(); } catch (e) {} }
+// The lines are English; without lang a French system voice reads them with French phonetics.
+function say(t) { $("#say").textContent = t; if (speakOn) { try { hush(); const u = new SpeechSynthesisUtterance(t); u.lang = "en-US"; speechSynthesis.speak(u); } catch (e) {} } }
+// Delayed halves of a step. Tracked so Restart drops them and a fast "Next step" finishes them in order.
+const pending = [];
+function later(fn, ms) { const p = { fn }; p.h = setTimeout(() => { pending.splice(pending.indexOf(p), 1); fn(); }, ms); pending.push(p); }
+function flush(run) { for (const p of pending.splice(0)) { clearTimeout(p.h); if (run) p.fn(); } }
 function user(t) { $("#utter").textContent = t; $("#you").classList.add("speaking"); clearTimeout(user.h); user.h = setTimeout(() => $("#you").classList.remove("speaking"), 2600); }
 function voice(t, ms) { const v = $("#vin"), x = $("#vtxt"); x.textContent = ""; v.classList.add("show"); user("“" + t + "”");
   let i = 0; const step = Math.max(18, (ms * 0.8) / t.length); clearInterval(voice.h); clearTimeout(voice.o);
@@ -267,7 +273,7 @@ const SCENARIOS = {
     { t: 30, run() {
       load("http://localhost:8765/", QUICKPAY, TREE_RENT);
       log("allow", "navigate_page", "ALLOW", "Google Web Risk: no threats for localhost. Site is inside the mandate.", "guardian.py · before_tool");
-      setTimeout(() => { treeShow(true); log("info", "take_snapshot", "READ", "The reader gets the page as an accessibility tree.", "chrome-devtools-mcp"); }, 1800); } },
+      later(() => { treeShow(true); log("info", "take_snapshot", "READ", "The reader gets the page as an accessibility tree.", "chrome-devtools-mcp"); }, 1800); } },
     { t: 40, run() {
       treeShow(false); $("#site").classList.add("flagged"); $("#status").textContent = "page tainted";
       log("block", "Model Armor", "INJECTION", "Page text screened: it carries hidden instructions. The page is marked tainted.", "guardian.py · injection.screen");
@@ -276,19 +282,19 @@ const SCENARIOS = {
     { t: 56, run() {
       fill([["#f-recipient", "collect@rent-update.example"], ["#f-amount", "2400"]]); target("#f-recipient");
       log("allow", "fill_form", "ALLOW", "No field carries data the mandate forbids.", "guardian.py · before_tool");
-      setTimeout(() => { target("#f-send"); $("#f-send").classList.add("blocked");
+      later(() => { target("#f-send"); $("#f-send").classList.add("blocked");
         log("block", "click  “Send”", "BLOCK", "recipient collect@rent-update.example is not in the mandate; amount 2400 exceeds the limit of 1200; the page carries hidden instructions", "guardian.py · before_tool → blocked_by_guardian");
         say("I stopped this action: recipient collect@rent-update.example is not in the mandate; amount 2400 exceeds the limit of 1200; the page carries hidden instructions."); }, 1600); } },
     { t: 68, run() {
       $("#f-send").classList.remove("blocked"); target("#f-amount");
       fill([["#f-recipient", "jane@rent.example"], ["#f-amount", "1200"], ["#f-memo", "November rent"]]);
       log("allow", "fill_form", "ALLOW", "Recipient jane@rent.example, amount 1200.", "guardian.py · before_tool");
-      setTimeout(() => { target("#f-send");
+      later(() => { target("#f-send");
         log("ask", "click  “Send”", "ASK", "send within the mandate, needs a spoken yes", "policy.py · SENSITIVE_KINDS");
         say("This will send on localhost:8765 with Recipient: jane@rent.example, Amount: 1200, Memo: November rent. Should I go ahead? Say yes to confirm."); }, 1500); } },
     { t: 82, run() {
       voice("Yes, go ahead.", 1200);
-      setTimeout(() => { target(null);
+      later(() => { target(null);
         log("allow", "click  “Send”", "ALLOW", "Spoken yes matches the pending action hash.", "guardian.py · confirmation");
         $("#out").innerHTML = `<p class="result">Sent: 1200 to jane@rent.example, memo “November rent”.</p>`;
         receipt(`collection  receipts\nsentence    "Pay my rent to jane@rent.example,\n             at most 1,200 dollars"\naction      send · localhost:8765\nfields      recipient jane@rent.example\n            amount 1200\nverdict     confirmed by voice\nts          ${new Date().toISOString().slice(0, 19)}Z`);
@@ -306,7 +312,7 @@ const SCENARIOS = {
     { t: 9, run() {
       load("http://localhost:8765/shop.html", SHOP, TREE_SHOP);
       log("allow", "navigate_page", "ALLOW", "Google Web Risk: no threats. Site is inside the mandate.", "guardian.py · before_tool");
-      setTimeout(() => { treeShow(true); log("info", "take_snapshot", "READ", "The tree includes text hidden from sighted users.", "chrome-devtools-mcp"); }, 1500); } },
+      later(() => { treeShow(true); log("info", "take_snapshot", "READ", "The tree includes text hidden from sighted users.", "chrome-devtools-mcp"); }, 1500); } },
     { t: 15, run() {
       treeShow(false); $("#site").classList.add("flagged"); $("#status").textContent = "page tainted";
       log("block", "Model Armor", "INJECTION", "Hidden text on the page tells the assistant to add a tip and not mention it.", "guardian.py · injection.screen");
@@ -315,7 +321,7 @@ const SCENARIOS = {
     { t: 24, run() {
       fill([["#f-tip", "150"], ["#f-total", "229.00"]]); target("#f-tip");
       log("allow", "fill", "ALLOW", "No field carries data the mandate forbids.", "guardian.py · before_tool");
-      setTimeout(() => { target("#f-send"); $("#f-send").classList.add("blocked");
+      later(() => { target("#f-send"); $("#f-send").classList.add("blocked");
         log("block", "click  “Place order”", "BLOCK", "amount 150 exceeds the limit of 90; the page carries hidden instructions", "guardian.py · before_tool → blocked_by_guardian");
         say("I stopped this action: amount 150 exceeds the limit of 90; the page carries hidden instructions."); }, 1500); } },
     { t: 32, run() { window.__done = true; } },
@@ -325,7 +331,7 @@ const SCENARIOS = {
 let scen = "rent", idx = 0, timer = null, playing = false, t0 = 0, tOff = 0;
 const steps = () => SCENARIOS[scen];
 function reset() {
-  stop(); idx = 0; tOff = 0; overlay("");
+  stop(); flush(false); hush(); idx = 0; tOff = 0; overlay("");
   $("#utter").textContent = ""; $("#mdl").innerHTML = ""; $("#mandate").classList.remove("on"); $("#receipt").hidden = true;
   $("#url").textContent = "about:blank"; $("#status").textContent = "Chrome · DevTools MCP";
   $("#vp").innerHTML = `<div class="blank">The agent's Chrome. Pages load here as the navigator works.</div>`;
@@ -333,7 +339,7 @@ function reset() {
   $("#say").textContent = "Press Play, or Next step to go one call at a time.";
   window.__done = false;
 }
-function next() { const s = steps()[idx]; if (!s) { stop(); return false; } idx++; s.run(); tOff = s.t; return true; }
+function next() { const s = steps()[idx]; if (!s) { stop(); return false; } flush(true); idx++; s.run(); tOff = s.t; return true; }
 function schedule() {
   const s = steps()[idx]; if (!s) { stop(); return; }
   const wait = Math.max(0, (s.t - tOff) * 1000 - (performance.now() - t0));
@@ -341,12 +347,13 @@ function schedule() {
 }
 function play() { if (!steps()[idx]) reset(); playing = true; $("#play").textContent = "Pause"; t0 = performance.now(); schedule(); }
 function stop() { playing = false; clearTimeout(timer); $("#play").textContent = "Play"; }
-$("#play").onclick = () => (playing ? stop() : play());
+function pause() { stop(); hush(); }
+$("#play").onclick = () => (playing ? pause() : play());
 $("#step").onclick = () => { stop(); if (!next()) { reset(); next(); } };
 $("#restart").onclick = () => { reset(); play(); };
-$("#speak").onclick = (e) => { speakOn = !speakOn; e.currentTarget.setAttribute("aria-pressed", speakOn); e.currentTarget.textContent = "Read aloud: " + (speakOn ? "on" : "off"); if (!speakOn) try { speechSynthesis.cancel(); } catch (_) {} };
+$("#speak").onclick = (e) => { speakOn = !speakOn; e.currentTarget.setAttribute("aria-pressed", speakOn); e.currentTarget.textContent = "Read aloud: " + (speakOn ? "on" : "off"); if (speakOn) say($("#say").textContent); else hush(); };
 for (const k of ["rent", "shop"]) $("#tab-" + k).onclick = () => { scen = k; document.querySelectorAll(".tabs button").forEach((b) => b.setAttribute("aria-selected", b.id === "tab-" + k)); reset(); };
-document.addEventListener("keydown", (e) => { if (e.target.closest("button")) return; if (e.key === " ") { e.preventDefault(); playing ? stop() : play(); } if (e.key === "ArrowRight") $("#step").click(); });
+document.addEventListener("keydown", (e) => { if (e.target.closest("button")) return; if (e.key === " ") { e.preventDefault(); playing ? pause() : play(); } if (e.key === "ArrowRight") $("#step").click(); });
 
 // #autoplay is the recording mode: dark theme, timeline from t=0 on a call from the recorder.
 if (location.hash === "#autoplay") { document.documentElement.dataset.theme = "dark"; window.startDemo = () => { reset(); play(); }; }
