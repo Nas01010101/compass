@@ -16,6 +16,7 @@ Before working, read `docs/CONTEXT.md` (project state and decisions) and `TEAM.m
 | `agent/copilot/mandate.py` | Sentence to mandate with Gemini structured output |
 | `agent/copilot/injection.py` | Model Armor screening and local injection patterns |
 | `agent/copilot/cloud.py` | Web Risk and Firestore receipts |
+| `agent/copilot/shortcuts.py` | Voice shortcuts (stop, wait, continue, repeat, help) and the pause enforced before every browser action |
 | `agent/tests/` | pytest suite and the recorded snapshot in `fixtures/` |
 | `agent/demo/`, `backend/demo/` | Demo bank pages with a planted instruction |
 | `extension/`, `test/` | Chrome extension and its Node tests |
