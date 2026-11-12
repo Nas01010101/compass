@@ -6,3 +6,11 @@ node_modules/
 kickoff.md
 .claude/
 .playwright-mcp/
+
+# LaTeX build products for docs/paper
+docs/paper/*.aux
+docs/paper/*.log
+docs/paper/*.out
+docs/paper/*.fls
+docs/paper/*.fdb_latexmk
+docs/paper/*.synctex.gz
