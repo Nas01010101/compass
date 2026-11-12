@@ -42,7 +42,7 @@ Chrome 144+ with remote debugging on (`chrome://inspect/#remote-debugging`), or 
 
 ```bash
 cd agent && uv run pytest -q     # Guardian, no network
-npm test                         # extension policy
+npm install && npm test          # extension policy; the first run needs the install
 ```
 
 ## Redeploy

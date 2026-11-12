@@ -38,10 +38,17 @@ Instruction: """
 
 
 def fallback(sentence: str) -> dict:
-    emails = re.findall(r"[\w.+-]+@[\w-]+\.[\w.]+", sentence)
-    domains = [d for d in re.findall(r"\b(?:[\w-]+\.)+[a-z]{2,}\b", sentence, re.I) if not any(d in e for e in emails)]
-    amounts = re.findall(r"\$?\s?(\d[\d,. ]*)\s?\$?", sentence)
-    from .policy import parse_amount
+    from .policy import parse_amount, site
+
+    # Pull URLs out first: a port (localhost:8765) read as an amount raised the limit to 8765,
+    # and a page name (shop.html) read as a domain.
+    url_re = r"https?://[^\s,]+|[a-z][\w.-]*:\d{2,5}[^\s,]*"
+    urls = re.findall(url_re, sentence, re.I)
+    rest = re.sub(url_re, " ", sentence, flags=re.I)
+    emails = re.findall(r"[\w.+-]+@[\w-]+\.[\w.]+", rest)
+    domains = [site(u) for u in urls]
+    domains += [d for d in re.findall(r"\b(?:[\w-]+\.)+[a-z]{2,}\b", rest, re.I) if not any(d in e for e in emails)]
+    amounts = re.findall(r"\$?\s?(\d[\d,. ]*)\s?\$?", re.sub(r"[\w.+-]+@[\w-]+\.[\w.]+", " ", rest))
 
     nums = [parse_amount(a) for a in amounts if parse_amount(a) == parse_amount(a)]
     return {

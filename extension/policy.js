@@ -45,7 +45,8 @@ export function check(policy, action, now = Date.now()) {
     }
     if (policy.maxAmount != null && AMOUNT_KEY.test(k)) {
       const a = parseAmount(v);
-      if (a > policy.maxAmount) reasons.push(`amount ${a} exceeds the limit of ${policy.maxAmount}`);
+      if (Number.isNaN(a)) reasons.push(`amount '${v}' could not be read`); // NaN > max is false
+      else if (a > policy.maxAmount) reasons.push(`amount ${a} exceeds the limit of ${policy.maxAmount}`);
     }
     if (policy.forbiddenData?.some((f) => low(k).includes(low(f)))) {
       reasons.push(`field "${k}" carries data the mandate forbids`);
