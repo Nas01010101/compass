@@ -4,7 +4,7 @@
 
 **Demo video (1:51):** [docs/video/compass-demo.mp4](docs/video/compass-demo.mp4)
 
-**Paper:** [docs/paper.md](docs/paper.md) · LaTeX source [docs/paper/main.tex](docs/paper/main.tex)
+**Paper (PDF):** [docs/paper/compass-paper.pdf](docs/paper/compass-paper.pdf) · [Markdown](docs/paper.md) · [LaTeX source](docs/paper/main.tex)
 
 Live: https://copilot-embrfilgsa-uc.a.run.app (pick "copilot"). Google services used: [STACK.md](STACK.md).
 
