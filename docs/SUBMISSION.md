@@ -13,7 +13,7 @@ Live: https://copilot-embrfilgsa-uc.a.run.app (pick "copilot") · Code: https://
 **La solution.** L'utilisateur dit ce qu'il veut : « Paie mon loyer à jane@rent.example, 1200 dollars maximum. » Gemini transforme cette phrase en mandat (destinataire, montant, site, durée). Compass lit la page à partir de l'arbre d'accessibilité de Chrome, la décrit à voix haute, remplit le formulaire et clique. Avant chaque action, le Guardian vérifie qu'elle respecte le mandat. Si la page tente de changer le destinataire ou le montant, l'action est bloquée et Compass explique pourquoi. Avant tout paiement, il demande un « oui » explicite, puis enregistre un reçu avec les mots de l'utilisateur.
 
 **Ce qui le distingue.**
-- La sécurité ne dépend pas d'un LLM : le mandat est appliqué en Python, et Model Armor et Web Risk sont des services Google séparés qui contrôlent chaque décision de Gemini.
+- La sécurité ne dépend pas d'un LLM : le mandat est appliqué en Python, et Model Armor et Web Risk sont des services Google séparés : Model Armor analyse le texte de la page et Web Risk chaque adresse avant que l'agent agisse.
 - Les vérifications sont faites par destinataire, pas par site : un formulaire bancaire de confiance ne peut pas payer le mauvais compte.
 - Le Guardian est un plugin ADK, donc aucun sous-agent ne peut le contourner.
 
@@ -30,7 +30,7 @@ Live: https://copilot-embrfilgsa-uc.a.run.app (pick "copilot") · Code: https://
 **Solution.** The user says what they want: "Pay my rent to jane@rent.example, at most 1200 dollars." Gemini turns the sentence into a mandate (recipient, amount, site, expiry). Compass reads the page from Chrome's accessibility tree, describes it aloud, fills the form and clicks. Before every action, the Guardian checks it against the mandate. If the page tries to change the recipient or the amount, the action is blocked and Compass says why. Before any payment it asks for a spoken yes, then stores a receipt with the user's own words.
 
 **What sets it apart.**
-- Safety does not rest on an LLM: the mandate is enforced in Python, and Model Armor and Web Risk are separate Google services that check each Gemini decision.
+- Safety does not rest on an LLM: the mandate is enforced in Python, and Model Armor and Web Risk are separate Google services: Model Armor screens page text and Web Risk screens each URL before the agent acts.
 - Checks are per recipient, not per site: a trusted bank form still cannot pay the wrong account.
 - The Guardian is an ADK plugin, so no sub-agent can skip it.
 

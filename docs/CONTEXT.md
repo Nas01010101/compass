@@ -1,6 +1,6 @@
 # Shared context
 
-State of the project as of 2026-11-11 23:45Z. Agents read this before working; the owner updates it.
+State of the project as of 2026-11-12 00:12Z. Agents read this before working; the owner updates it.
 
 ## What Compass is
 
@@ -12,9 +12,22 @@ A voice browser agent for blind and low-vision users. The user says what they wa
 - The rent payment to Jane asks first ("Should I go ahead?"), runs after "yes, go ahead", and writes a Firestore receipt.
 - The Cloud Run container drives its own headless Chromium and serves the demo page at `http://localhost:8765`.
 
+## Since 00:10Z
+
+- Merged: submission text and slide (#1), video guide (#3), shop checkout attack page (#4).
+- An amount with no digits now blocks when a limit is set (was NaN, passed the check).
+- Reader and navigator share one Chrome (one MCP toolset, filtered per agent); the reader can't click or navigate.
+- Cloud Run runs `--max-instances 1 --session-affinity` so the browser survives between turns.
+
+## Known limits
+
+- A tip below the limit is checked alone: a 50 tip under a 90 limit passes while the total becomes 129 (the Guardian still asks). Test marked xfail.
+- One Chrome per container: concurrent users share a browser.
+
 ## Not verified yet
 
 - Voice with `gemini-3.8-live`.
+- Web Risk on Cloud Run (uses ADC, no API key).
 - `scripts/teammate-setup.sh` on a teammate's machine.
 - The Chrome extension against a live page.
 
