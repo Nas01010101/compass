@@ -23,3 +23,8 @@ def test_navigator_can_act():
 def test_unknown_caller_gets_read_only():
     assert not _tool_for_agent(_t("click"), None)
     assert not _tool_for_agent(_t("fill"), SimpleNamespace(agent_name="orchestrator"))
+
+
+def test_shared_toolset_filters_per_agent_not_per_turn():
+    from copilot.agent import _browser
+    assert _browser._use_invocation_cache is False

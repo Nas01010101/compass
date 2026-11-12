@@ -52,6 +52,9 @@ _browser = McpToolset(
     ),
     tool_filter=_tool_for_agent,
 )
+# ADK caches a toolset's tools per invocation, so the first agent in a turn would fix the
+# tool list for both; the filter must run per agent.
+_browser._use_invocation_cache = False
 
 
 def set_mandate(instruction: str, tool_context: ToolContext) -> dict:
