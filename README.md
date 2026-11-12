@@ -1,4 +1,4 @@
-![Compass](docs/banner.png)
+![Compass](docs/banner-guardian.png)
 
 # Compass
 
@@ -7,6 +7,17 @@ Live: https://copilot-embrfilgsa-uc.a.run.app (pick "copilot"). Google services 
 A voice browser agent for blind and low-vision users. You say what you want done ("pay my rent to jane@rent.example, at most 1200 dollars, on QuickPay"); the agent reads the page from Chrome's accessibility tree, fills the form and clicks for you. A Guardian checks every action against what you said before it runs, so a hidden instruction on the page cannot redirect the money.
 
 Built on Google ADK with Gemini on Vertex AI (Gemini Enterprise Agent Platform), Model Armor, Web Risk and Firestore.
+
+## Demo
+
+| Live agent on Cloud Run (1:29) | Guardian walkthrough (1:47) |
+|---|---|
+| [![Live agent video](docs/video/live.jpg)](docs/demo.mp4) | [![Guardian walkthrough video](docs/video/blocked.jpg)](docs/video/compass-demo.mp4) |
+| The adk web UI driving Chrome, with captions and voiceover. | The rent payment step by step: the planted instruction, the block, the spoken yes, the receipt. Voiceover by Gemini TTS. |
+
+![The Guardian asks for a spoken yes before money moves](docs/video/confirm.jpg)
+
+Open [`docs/demo-ui/index.html`](docs/demo-ui/) in Chrome to step through both attacks yourself: rent on QuickPay and a hidden tip on the shop page.
 
 ## How it works
 
