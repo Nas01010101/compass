@@ -5,8 +5,8 @@ Deadline 19:45 EST (00:45Z). Deliverable: a video of at most 2:30, plus the repo
 | Member | Role | Needs Google Cloud access |
 |---|---|---|
 | Nas01010101 | Owner: approves requests, merges PRs, deploys, grants access | yes |
-| pierreduh | Video: record the 2:30 demo from `DEMO.md` on the live URL | no |
-| maryambani | Pitch: submission text and the architecture slide from `STACK.md` | no |
+| pierreduh | Video: record the demo on the live URL | no |
+| maryambani | Pitch: submission text and the architecture slide | no |
 | will13cb | Red team: try new page injections on the live URL, report what gets through | no |
 | benhoangquan | Voice: run `gemini-3.8-live` locally, report whether the spoken flow works | yes |
 | Alex64-1149 | Second demo page: a shop checkout with a planted instruction, plus its Guardian test | no |

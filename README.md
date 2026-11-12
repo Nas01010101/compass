@@ -6,81 +6,39 @@
 
 **Paper (PDF):** [docs/paper/compass-paper.pdf](docs/paper/compass-paper.pdf) · [Markdown](docs/paper.md) · [LaTeX source](docs/paper/main.tex)
 
-Live: https://copilot-embrfilgsa-uc.a.run.app (pick "copilot"). Google services used: [STACK.md](STACK.md).
+Live: https://copilot-embrfilgsa-uc.a.run.app (pick "copilot")
 
-A voice browser agent for blind and low-vision users. You say what you want done ("pay my rent to jane@rent.example, at most 1200 dollars, on QuickPay"); the agent reads the page from Chrome's accessibility tree, fills the form and clicks for you. A Guardian checks every action against what you said before it runs, so a hidden instruction on the page cannot redirect the money.
+A voice browser agent for blind and low-vision users. You say what you want done ("pay my rent to jane@rent.example, at most 1200 dollars, on QuickPay"); the agent reads the page from Chrome's accessibility tree, fills the form and clicks. A Guardian checks every action against what you said, so a hidden instruction on the page cannot redirect the money.
 
-Built on Google ADK with Gemini on Vertex AI (Gemini Enterprise Agent Platform), Model Armor, Web Risk and Firestore.
-
-## Demo
-
-| Live agent on Cloud Run (1:29) | Guardian walkthrough (1:51) |
-|---|---|
-| [![Live agent video](docs/video/live.jpg)](docs/demo.mp4) | [![Guardian walkthrough video](docs/video/blocked.jpg)](docs/video/compass-demo.mp4) |
-| The adk web UI driving Chrome, with captions and voiceover. | The rent payment step by step: the spoken request, the planted instruction, the block, the spoken yes, the receipt. Voices by Gemini TTS. |
-
-![The Guardian asks for a spoken yes before money moves](docs/video/confirm.jpg)
-
-Open [`docs/demo-ui/index.html`](docs/demo-ui/) in Chrome to step through both attacks yourself: rent on QuickPay and a hidden tip on the shop page.
+Built on Google ADK, Gemini on Vertex AI, Model Armor, Web Risk, Firestore and Cloud Run ([STACK.md](STACK.md)).
 
 ## How it works
 
 ```
-voice / text ──> orchestrator (gemini-3.8-flash, or gemini-3.8-live for voice)
-                   ├─ set_mandate: Gemini structured output turns your sentence into a policy
-                   ├─ reader:    take_snapshot -> spoken page summary
+voice / text ──> orchestrator (Gemini)
+                   ├─ set_mandate: your sentence -> recipient, amount, site, expiry
+                   ├─ reader:    page snapshot -> spoken summary
                    └─ navigator: click / fill / navigate via chrome-devtools-mcp
                                     │
-                         Guardian plugin (before/after every tool call)
-                           ├─ recipient, amount, site, no-go zones, forbidden fields, expiry
-                           ├─ "ask": money or data moves only after a spoken yes
-                           ├─ Model Armor + local patterns: flags page text aimed at AI agents
-                           ├─ Web Risk: blocks navigation to known phishing and malware
-                           └─ Firestore receipt: what was paid, to whom, and the user's reason
+                         Guardian plugin (before every tool call)
+                           ├─ blocks actions outside the mandate
+                           ├─ asks for a spoken yes before money moves
+                           ├─ Model Armor flags page text aimed at AI agents
+                           ├─ Web Risk blocks known phishing and malware
+                           └─ Firestore receipt with the user's own words
 ```
 
-| Piece | File |
-|---|---|
-| Agents and tools | `agent/copilot/agent.py` |
-| Guardian plugin | `agent/copilot/guardian.py` |
-| Mandate checks (value level, per recipient) | `agent/copilot/policy.py` |
-| Sentence to mandate | `agent/copilot/mandate.py` |
-| Model Armor screening | `agent/copilot/injection.py` |
-| Web Risk, receipts | `agent/copilot/cloud.py` |
-| Chrome extension (form and fetch guard for any agent) | `extension/` |
-| Demo bank and shop pages with planted instructions | `agent/demo/` |
-
-The Guardian is an ADK plugin, so it runs before agent callbacks and no sub-agent can skip it. A blocked tool call never reaches Chrome; the model receives the Guardian's reasons and reads them to the user.
-
-The checks are per recipient, not per site. An allowlist of sites lets "pay the attacker" through when the attacker's account sits behind the same bank form as the landlord's.
+Code: `agent/copilot/` (agents, Guardian, policy), `extension/` (Chrome extension), `agent/demo/` (demo bank and shop pages).
 
 ## Run it
 
-Requirements: Chrome 144+, Node 20+, [uv](https://docs.astral.sh/uv/), a Google Cloud project.
-
 ```bash
-gcloud auth login && gcloud auth application-default login
-PROJECT=<gcp-project> ./deploy.sh local     # enables APIs, Model Armor template, Firestore, writes agent/copilot/.env
-cd agent && uv run adk web                   # http://localhost:8000, pick "copilot"
+cd agent && uv run adk web                                # http://localhost:8000, pick "copilot"
+python3 -m http.server 8765 --directory agent/demo        # demo pages
+cd agent && uv run pytest && cd .. && npm install && npm test
 ```
 
-In Chrome open `chrome://inspect/#remote-debugging` and turn remote debugging on; the agent attaches to your open browser (`--autoConnect`). Set `COPILOT_OWN_CHROME=1` to have it start a separate Chrome instead.
-
-Voice: set `COPILOT_MODEL=gemini-3.8-live` in `agent/copilot/.env` and use the microphone button in `adk web`.
-
-Demo pages (bank and shop): `python3 -m http.server 8765 --directory agent/demo`, then ask the agent to pay the rent on `http://localhost:8765`.
-
-Tests (no network): `cd agent && uv run pytest` (Guardian, including a snapshot recorded from chrome-devtools-mcp) and `npm install && npm test` (extension policy).
-
-## Team setup
-
-A teammate with a Google account runs the agent against the shared Google Cloud project `copilot-gdg-11111801` in two steps: the owner runs `scripts/grant-teammate.sh <email>` to grant IAM roles, then the teammate runs `scripts/teammate-setup.sh` to sign in, write `agent/copilot/.env` and run the tests. Layout, run, test and redeploy commands and repo rules are in [AGENTS.md](AGENTS.md), which Claude Code, Codex and Gemini CLI read.
-
-## Limits
-
-- Field and button detection reads accessible names. A recipient field labelled "Field 7" is not recognised as a recipient.
-- The Cloud Run deploy drives its own headless Chromium inside the container, so it can only reach pages that container can load (the bundled demo page at `http://localhost:8765` and public sites). Driving the user's own Chrome needs the local setup above.
-- With no Google Cloud credentials, the mandate compiler falls back to a regex parse and injection screening falls back to local patterns.
+Needs Chrome 144+ with remote debugging on (`chrome://inspect/#remote-debugging`), uv, Node 20+ and a Google Cloud project. Setup, deploy and repo rules: [AGENTS.md](AGENTS.md).
 
 ## License
 
