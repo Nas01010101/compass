@@ -1,12 +1,12 @@
 {
   "manifest_version": 3,
-  "name": "Mandat",
+  "name": "Compass",
   "version": "0.1.0",
-  "description": "Tell your browser agent what it may do in one sentence. Mandat enforces it on every form and payment.",
+  "description": "Tell your browser agent what it may do in one sentence. Compass enforces it on every form and payment.",
   "permissions": ["storage", "activeTab", "tabs"],
   "host_permissions": ["<all_urls>"],
   "background": { "service_worker": "background.js", "type": "module" },
-  "action": { "default_popup": "popup.html", "default_title": "Mandat" },
+  "action": { "default_popup": "popup.html", "default_title": "Compass" },
   "content_scripts": [
     {
       "matches": ["<all_urls>"],

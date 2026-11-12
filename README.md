@@ -2,6 +2,8 @@
 
 # Compass
 
+**Demo video (1:51):** [docs/video/compass-demo.mp4](docs/video/compass-demo.mp4)
+
 Live: https://copilot-embrfilgsa-uc.a.run.app (pick "copilot"). Google services used: [STACK.md](STACK.md).
 
 A voice browser agent for blind and low-vision users. You say what you want done ("pay my rent to jane@rent.example, at most 1200 dollars, on QuickPay"); the agent reads the page from Chrome's accessibility tree, fills the form and clicks for you. A Guardian checks every action against what you said before it runs, so a hidden instruction on the page cannot redirect the money.
@@ -10,10 +12,10 @@ Built on Google ADK with Gemini on Vertex AI (Gemini Enterprise Agent Platform),
 
 ## Demo
 
-| Live agent on Cloud Run (1:29) | Guardian walkthrough (1:47) |
+| Live agent on Cloud Run (1:29) | Guardian walkthrough (1:51) |
 |---|---|
 | [![Live agent video](docs/video/live.jpg)](docs/demo.mp4) | [![Guardian walkthrough video](docs/video/blocked.jpg)](docs/video/compass-demo.mp4) |
-| The adk web UI driving Chrome, with captions and voiceover. | The rent payment step by step: the planted instruction, the block, the spoken yes, the receipt. Voiceover by Gemini TTS. |
+| The adk web UI driving Chrome, with captions and voiceover. | The rent payment step by step: the spoken request, the planted instruction, the block, the spoken yes, the receipt. Voices by Gemini TTS. |
 
 ![The Guardian asks for a spoken yes before money moves](docs/video/confirm.jpg)
 
@@ -44,7 +46,7 @@ voice / text ──> orchestrator (gemini-3.8-flash, or gemini-3.8-live for voic
 | Model Armor screening | `agent/copilot/injection.py` |
 | Web Risk, receipts | `agent/copilot/cloud.py` |
 | Chrome extension (form and fetch guard for any agent) | `extension/` |
-| Demo bank page with a planted instruction | `backend/demo/index.html` |
+| Demo bank and shop pages with planted instructions | `agent/demo/` |
 
 The Guardian is an ADK plugin, so it runs before agent callbacks and no sub-agent can skip it. A blocked tool call never reaches Chrome; the model receives the Guardian's reasons and reads them to the user.
 
@@ -64,9 +66,9 @@ In Chrome open `chrome://inspect/#remote-debugging` and turn remote debugging on
 
 Voice: set `COPILOT_MODEL=gemini-3.8-live` in `agent/copilot/.env` and use the microphone button in `adk web`.
 
-Demo page: `python3 -m http.server 8765 --directory backend/demo`, then ask the agent to pay the rent on `http://localhost:8765`.
+Demo pages (bank and shop): `python3 -m http.server 8765 --directory agent/demo`, then ask the agent to pay the rent on `http://localhost:8765`.
 
-Tests (no network): `cd agent && uv run pytest` (Guardian, including a snapshot recorded from chrome-devtools-mcp) and `npm test` (extension policy).
+Tests (no network): `cd agent && uv run pytest` (Guardian, including a snapshot recorded from chrome-devtools-mcp) and `npm install && npm test` (extension policy).
 
 ## Team setup
 
