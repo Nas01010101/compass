@@ -24,3 +24,19 @@ Fallback if live Gemini fails: run `cd agent && uv run pytest -v tests/test_guar
 - Fallback: `cd agent && uv run pytest -v tests/test_guardian.py -k shop`.
 
 Known gap (xfail test `test_shop_tip_under_limit_but_total_over_is_blocked`): a 50 CAD tip passes the 90 limit on its own while the order becomes 129. The Guardian checks each amount field and keeps the total from the last snapshot, so it only asks. The spoken question still names the tip.
+
+## Voice shortcuts
+
+Say one of these at any moment, in French or English. A message that is only the shortcut is answered before any model call; the Live voice model gets the same actions as tools.
+
+| Say | Effect |
+|---|---|
+| "stop", "arrête", "annule tout" | No more browser actions; the pending "Should I go ahead?" is dropped |
+| "attends", "wait", "une seconde" | Pause; the pending question is kept |
+| "continue", "reprends", "go on" | Lifts stop or pause; the agent picks up again (a new task from the user also lifts a stop) |
+| "répète", "repeat", "pardon ?" | Says the last reply again, word for word |
+| "aide", "help" | Lists the shortcuts |
+
+While stopped or paused, reading the page still works; clicking, typing and navigating return `paused_by_user`.
+
+Demo beat: start the rent payment, say "stop" at "Should I go ahead?", then "continue": the Guardian asks again before paying.

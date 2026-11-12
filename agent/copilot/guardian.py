@@ -153,8 +153,8 @@ class Guardian(BasePlugin):
 
     async def after_tool_callback(self, *, tool, tool_args, tool_context, result):
         state = tool_context.state
-        if isinstance(result, dict) and str(result.get("status", "")).startswith(("blocked", "needs_")):
-            return None  # ADK calls this even when before_tool_callback skipped the tool
+        if isinstance(result, dict) and str(result.get("status", "")).startswith(("blocked", "needs_", "paused")):
+            return None  # ADK calls this even when a before_tool_callback skipped the tool
         if tool.name in NAV_TOOLS and tool_args.get("url"):
             state["guardian:url"] = tool_args["url"]
             state["guardian:form"] = {}
